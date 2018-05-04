@@ -1,0 +1,39 @@
+{
+  "name": "coreproc/globe-labs-sms-notification",
+  "description": "This package makes it easy to send notifications using Globe Labs SMS with Laravel 5.3, 5.4, and 5.5",
+  "homepage": "https://github.com/coreproc/globe-labs-sms-notification",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Chris Bautista",
+      "email": "chris.bautista@coreproc.ph",
+      "homepage": "https://coreproc.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.4",
+    "illuminate/notifications": "^5.3",
+    "illuminate/support": "^5.1|^5.2|^5.3"
+  },
+  "require-dev": {
+    "mockery/mockery": "^0.9.5",
+    "phpunit/phpunit": "4.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Coreproc\\GlobaLabsSms\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Coreproc\\GlobaLabsSms\\Test\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
