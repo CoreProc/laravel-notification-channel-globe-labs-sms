@@ -2,16 +2,21 @@
 
 namespace Coreproc\GlobeLabsSms;
 
-use Coreproc\GlobeLabsSms\Exceptions\CouldNotSendNotification;
-use Coreproc\GlobeLabsSms\Events\MessageWasSent;
-use Coreproc\GlobeLabsSms\Events\SendingMessage;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Notifications\Notification;
+use Coreproc\GlobeLabsSms\Exceptions\CouldNotSendNotification;
 
 class GlobeLabsSmsChannel
 {
-    public function __construct()
+    /**
+     * @var Client
+     */
+    protected $client;
+
+    public function __construct(Client $client)
     {
-        // Initialisation code here
+        $this->client = $client;
     }
 
     /**
@@ -20,14 +25,29 @@ class GlobeLabsSmsChannel
      * @param mixed $notifiable
      * @param \Illuminate\Notifications\Notification $notification
      *
-     * @throws \Coreproc\GlobeLabsSms\Exceptions\CouldNotSendNotification
+     * @throws CouldNotSendNotification
      */
     public function send($notifiable, Notification $notification)
     {
-        //$response = [a call to the api of your notification send]
+        if (empty($notifiable->routeNotificationFor('globeLabsSms'))) {
+            throw new CouldNotSendNotification('Missing method in your notifiable: routeNotificationForGlobeLabs().');
+        }
 
-//        if ($response->error) { // replace this by the code need to check for errors
-//            throw CouldNotSendNotification::serviceRespondedWithAnError($response);
-//        }
+        $contactInfo = $notifiable->routeNotificationFor('globeLabsSms');
+
+        // The contact info should include an access_token and a address
+        if (empty($contactInfo['access_token']) || empty($contactInfo['address'])) {
+            throw new CouldNotSendNotification('Missing variables from your routeNotificationForGlobeLabs().');
+        }
+
+        $message = $notification->toGlobeLabsSms($notifiable);
+
+        try {
+            $this->client->request('POST', $message->getApiSendUrl(), [
+                'body' => $message->toJson(),
+            ]);
+        } catch (GuzzleException $exception) {
+            throw new CouldNotSendNotification($exception->getMessage());
+        }
     }
 }
