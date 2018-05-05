@@ -2,11 +2,9 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/coreproc/laravel-notification-channel-globe-labs-sms.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/laravel-notification-channel-globe-labs-sms)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/coreproc/laravel-notification-channel-globe-labs-sms/master.svg?style=flat-square)](https://travis-ci.org/coreproc/laravel-notification-channel-globe-labs-sms)
 [![StyleCI](https://styleci.io/repos/8b2O04/shield)](https://styleci.io/repos/8b2O04)
 [![SensioLabsInsight](https://img.shields.io/sensiolabs/i/1de49b17-79c9-4e8b-816b-585d846128fe.svg?style=flat-square)](https://insight.sensiolabs.com/projects/1de49b17-79c9-4e8b-816b-585d846128fe)
 [![Quality Score](https://img.shields.io/scrutinizer/g/coreproc/laravel-notification-channel-globe-labs-sms.svg?style=flat-square)](https://scrutinizer-ci.com/g/coreproc/laravel-notification-channel-globe-labs-sms)
-[![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/coreproc/laravel-notification-channel-globe-labs-sms/master.svg?style=flat-square)](https://scrutinizer-ci.com/g/coreproc/laravel-notification-channel-globe-labs-sms/?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/coreproc/laravel-notification-channel-globe-labs-sms.svg?style=flat-square)](https://packagist.org/packages/coreproc/laravel-notification-channel-globe-labs-sms)
 
 This package makes it easy to send notifications using [Globe Labs SMS](http://www.globelabs.com.ph/#!/developer/api/sms) with Laravel 5.3 and above.
@@ -14,11 +12,8 @@ This package makes it easy to send notifications using [Globe Labs SMS](http://w
 ## Contents
 
 - [Installation](#installation)
-	- [Setting up the GlobeLabsSms service](#setting-up-the-GlobeLabsSms-service)
+	- [Setting up the GlobeLabsSms service](#setting-up-the-Globe-Labs-Sms-service)
 - [Usage](#usage)
-	- [Available Message methods](#available-message-methods)
-- [Changelog](#changelog)
-- [Testing](#testing)
 - [Security](#security)
 - [Contributing](#contributing)
 - [Credits](#credits)
@@ -33,16 +28,19 @@ Install this package with Composer:
 composer require coreproc/laravel-notification-channel-globe-labs-sms
 ```
     
-Register the ServiceProvider in your config/app.php (Skip this step if you are using Laravel 5.5):
+Register the ServiceProvider in your config/app.php (Skip this step if you are using Laravel 5.5 and above):
 
 ```
 Coreproc\GlobeLabsSms\GlobeLabsSmsServiceProvider::class,
 ```
 
-### Setting up the GlobeLabsSms service
+### Setting up the Globe Labs Sms service
 
-You need to register for a server key from Firebase for your application. Start by creating a project here: 
-[http://www.globelabs.com.ph/#!/developer/api/sms](http://www.globelabs.com.ph/#!/developer/api/sms)
+Start by creating a project here: [http://www.globelabs.com.ph/#!/developer/api/sms](http://www.globelabs.com.ph/#!/developer/api/sms)
+
+Please note that this package does not handle the opt-in steps required for a user to subscribe to your Globe Labs SMS application.
+
+This package assumes that you have the opt-in steps handled either via [SMS](http://www.globelabs.com.ph/docs/#getting-started-opt-in-via-sms) or through a [web form](http://www.globelabs.com.ph/docs/#getting-started-opt-in-via-webform) and that you already have access to the subscriber's access token.
 
 Once you've registered and set up your app, add the short code to your configuration in `config/broadcasting.php`
 
@@ -68,8 +66,8 @@ class User extends Model
     public function routeNotificationForGlobeLabsSms()
     {
         return [
-            'access_token' => 'access-token-obtained-from-sms-opt-in',
-            'address' => '09171234567',
+            'access_token' => 'access-token-obtained-from-sms-opt-in-this-could-be-stored-in-your-database',
+            'address' => '09171234567', // can be any format as long as it is a valid mobile number
         ];
     }
 }
