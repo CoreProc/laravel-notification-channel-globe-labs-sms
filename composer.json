@@ -1,5 +1,5 @@
 {
-  "name": "coreproc/globe-labs-sms-notification",
+  "name": "coreproc/laravel-notification-channel-globe-labs-sms",
   "description": "This package makes it easy to send notifications using Globe Labs SMS with Laravel 5.3, 5.4, and 5.5",
   "homepage": "https://github.com/coreproc/globe-labs-sms-notification",
   "license": "MIT",
