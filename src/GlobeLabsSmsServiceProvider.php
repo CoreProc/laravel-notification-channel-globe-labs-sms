@@ -2,6 +2,7 @@
 
 namespace Coreproc\GlobeLabsSms;
 
+use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
 
 class GlobeLabsSmsServiceProvider extends ServiceProvider
@@ -11,30 +12,14 @@ class GlobeLabsSmsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Bootstrap code here.
-
-        /**
-         * Here's some example code we use for the pusher package.
-
-        $this->app->when(Channel::class)
-            ->needs(Pusher::class)
+        $this->app->when(GlobeLabsSmsChannel::class)
+            ->needs(Client::class)
             ->give(function () {
-                $pusherConfig = config('broadcasting.connections.pusher');
-
-                return new Pusher(
-                    $pusherConfig['key'],
-                    $pusherConfig['secret'],
-                    $pusherConfig['app_id']
-                );
+                return new Client([
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                    ],
+                ]);
             });
-         */
-
-    }
-
-    /**
-     * Register the application services.
-     */
-    public function register()
-    {
     }
 }
