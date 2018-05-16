@@ -16,7 +16,9 @@ class GlobeLabsSmsMessage
 
     protected $address;
 
-    protected $globeLabsSmsApiSendUrl = 'https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/{senderAddress}/requests?access_token={accessToken}';
+    protected $globeLabsSmsApiSendUrl = 'https://devapi.globelabs.com.ph/smsmessaging/v1/outbound/{senderAddress}/requests';
+
+    protected $requestParams;
 
     public static function create($notifiable)
     {
@@ -37,7 +39,20 @@ class GlobeLabsSmsMessage
         $url = config('broadcasting.connections.globe_labs_sms.api_send_url', $this->globeLabsSmsApiSendUrl);
 
         $url = str_replace('{senderAddress}', $this->getSenderAddress(), $url);
-        $url = str_replace('{accessToken}', $this->getAccessToken(), $url);
+
+        $urlParams = [];
+
+        if (! empty($this->getAccessToken())) {
+            $urlParams['access_token'] = $this->getAccessToken();
+        }
+
+        $httpQuery = http_build_query($urlParams);
+
+        if (! empty($httpQuery)) {
+            $httpQuery = '?'.$httpQuery;
+        }
+
+        $url = $url.$httpQuery;
 
         return $url;
     }
@@ -101,6 +116,24 @@ class GlobeLabsSmsMessage
         return $this;
     }
 
+    /**
+     * An additional method to accommodate any additional parameters needed by the API.
+     *
+     * @param $requestParams
+     * @return GlobeLabsSmsMessage
+     */
+    public function setRequestParams($requestParams)
+    {
+        $this->requestParams = $requestParams;
+
+        return $this;
+    }
+
+    public function getRequestParams()
+    {
+        return $this->requestParams;
+    }
+
     public function toJson()
     {
         $request['outboundSMSMessageRequest']['address'] = $this->getAddress();
@@ -111,6 +144,10 @@ class GlobeLabsSmsMessage
         }
 
         $request['outboundSMSMessageRequest']['outboundSMSTextMessage']['message'] = $this->getMessage();
+
+        if (! empty($this->getRequestParams())) {
+            $request = array_merge($request, $this->getRequestParams());
+        }
 
         return json_encode($request);
     }
