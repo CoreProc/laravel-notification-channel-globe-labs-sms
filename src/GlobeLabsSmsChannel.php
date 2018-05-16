@@ -35,9 +35,10 @@ class GlobeLabsSmsChannel
 
         $contactInfo = $notifiable->routeNotificationFor('globeLabsSms');
 
-        // The contact info should include an access_token and a address
-        if (empty($contactInfo['access_token']) || empty($contactInfo['address'])) {
-            throw new CouldNotSendNotification('Missing variables from your routeNotificationForGlobeLabs().');
+        // The contact info should include an address (mobile number). We are making access_token optional. The API
+        // response will catch that anyway.
+        if (empty($contactInfo['address'])) {
+            throw new CouldNotSendNotification('Missing address variable from your routeNotificationForGlobeLabs().');
         }
 
         $message = $notification->toGlobeLabsSms($notifiable);
