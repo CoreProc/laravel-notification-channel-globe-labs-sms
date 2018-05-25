@@ -19,7 +19,7 @@ class GlobeLabsSmsServiceProvider extends ServiceProvider
                     'headers' => [
                         'Content-Type' => 'application/json',
                     ],
-                    'verify' => false
+                    'verify' => config('broadcasting.connections.globe_labs_sms.verify_ssl', true)
                 ]);
             });
     }
