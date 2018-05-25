@@ -19,6 +19,7 @@ class GlobeLabsSmsServiceProvider extends ServiceProvider
                     'headers' => [
                         'Content-Type' => 'application/json',
                     ],
+                    'verify' => false
                 ]);
             });
     }
