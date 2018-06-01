@@ -2,10 +2,14 @@
 
 namespace Coreproc\GlobeLabsSms;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Notifications\Notification;
 use Coreproc\GlobeLabsSms\Exceptions\CouldNotSendNotification;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\ServerException;
+use Illuminate\Notifications\Notification;
+use Lang;
 
 class GlobeLabsSmsChannel
 {
@@ -47,8 +51,30 @@ class GlobeLabsSmsChannel
             $this->client->request('POST', $message->getApiSendUrl(), [
                 'body' => $message->toJson(),
             ]);
+        } catch (ConnectException $exception) {
+            throw $this->generateExceptionMessage($exception, 'connect_exception');
+        } catch (ClientException $exception) {
+            throw $this->generateExceptionMessage($exception, 'client_exception');
+        } catch (ServerException $exception) {
+            throw $this->generateExceptionMessage($exception, 'server_exception');
         } catch (GuzzleException $exception) {
-            throw new CouldNotSendNotification($exception->getMessage());
+            throw $this->generateExceptionMessage($exception, 'guzzle_exception');
         }
+    }
+
+    private function generateExceptionMessage($exception, $langString)
+    {
+        $message = $exception->getMessage();
+
+        if (! empty($exception->getResponse())) {
+            $response = json_decode($exception->getResponse()->getBody()->getContents());
+            $message = $response->error ?? $exception->getMessage();
+        }
+
+        if (Lang::has('globe_labs_sms::errors.' . $langString)) {
+            $message = __('globe_labs_sms::errors.' . $langString);
+        }
+
+        return new CouldNotSendNotification($message);
     }
 }

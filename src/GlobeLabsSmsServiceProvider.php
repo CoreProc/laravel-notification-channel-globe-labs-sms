@@ -19,8 +19,25 @@ class GlobeLabsSmsServiceProvider extends ServiceProvider
                     'headers' => [
                         'Content-Type' => 'application/json',
                     ],
-                    'verify' => config('broadcasting.connections.globe_labs_sms.verify_ssl', true)
+                    'verify' => config('broadcasting.connections.globe_labs_sms.verify_ssl', true),
                 ]);
             });
+
+        $this->loadLang();
+
+        $this->publishLang();
+    }
+
+    private function loadLang()
+    {
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'globe_labs_sms');
+    }
+
+    private function publishLang()
+    {
+        // Publish languages for override
+        $this->publishes([
+            __DIR__ . '/../resources/lang' => base_path('resources/lang/vendor/globe_labs_sms'),
+        ], 'locales');
     }
 }
