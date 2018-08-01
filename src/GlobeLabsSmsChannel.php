@@ -2,6 +2,7 @@
 
 namespace Coreproc\GlobeLabsSms;
 
+use Coreproc\GlobeLabsSms\Events\GlobeLabsSmsSent;
 use Coreproc\GlobeLabsSms\Exceptions\CouldNotSendNotification;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -48,9 +49,11 @@ class GlobeLabsSmsChannel
         $message = $notification->toGlobeLabsSms($notifiable);
 
         try {
-            $this->client->request('POST', $message->getApiSendUrl(), [
+            $response = $this->client->request('POST', $message->getApiSendUrl(), [
                 'body' => $message->toJson(),
             ]);
+
+            event(new GlobeLabsSmsSent($response));
         } catch (ConnectException $exception) {
             throw $this->generateExceptionMessage($exception, 'connect_exception');
         } catch (ClientException $exception) {
